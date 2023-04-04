@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, TextareaAutosize, styled } from "@mui/material";
@@ -7,6 +7,14 @@ import SendIcon from "@mui/icons-material/Send";
 
 const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
+
+	useEffect(() => {
+		let chat = document.getElementById("chat");
+		if (chat) {
+			chat.scrollTop = chat?.scrollHeight;
+		}
+	}, [showChatWindow]);
+
 	return (
 		<>
 			<ChatBotIcon>
@@ -37,43 +45,45 @@ const ChatBot = () => {
 							<OnlineStatus>Online</OnlineStatus>
 						</NameSection>
 					</HeaderSection>
-					<ChatSection>
-						<ChatBubbleWrapper className="ClientChat">
-							<ChatBubbleSection className="ClientChat">
-								<IdentifierText>You</IdentifierText>
-								<ChatBubble className="ClientChat">
-									Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-									Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-									quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-									accusantium rem tenetur?
-								</ChatBubble>
-							</ChatBubbleSection>
-						</ChatBubbleWrapper>
+					<ChatContainer id="chat">
+						<ChatSection>
+							<ChatBubbleWrapper className="ClientChat">
+								<ChatBubbleSection className="ClientChat">
+									<IdentifierText>You</IdentifierText>
+									<ChatBubble className="ClientChat">
+										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
+										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
+										accusantium rem tenetur?
+									</ChatBubble>
+								</ChatBubbleSection>
+							</ChatBubbleWrapper>
 
-						<ChatBubbleWrapper className="BotChat">
-							<ChatBubbleSection className="BotChat">
-								<IdentifierText>ChatBot Support</IdentifierText>
-								<ChatBubble className="BotChat">
-									Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-									Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-									quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-									accusantium rem tenetur?
-								</ChatBubble>
-							</ChatBubbleSection>
-						</ChatBubbleWrapper>
+							<ChatBubbleWrapper className="BotChat">
+								<ChatBubbleSection className="BotChat">
+									<IdentifierText>ChatBot Support</IdentifierText>
+									<ChatBubble className="BotChat">
+										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
+										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
+										accusantium rem tenetur?
+									</ChatBubble>
+								</ChatBubbleSection>
+							</ChatBubbleWrapper>
 
-						<ChatBubbleWrapper className="ClientChat">
-							<ChatBubbleSection className="ClientChat">
-								<IdentifierText>You</IdentifierText>
-								<ChatBubble className="ClientChat">
-									Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-									Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-									quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-									accusantium rem tenetur?
-								</ChatBubble>
-							</ChatBubbleSection>
-						</ChatBubbleWrapper>
-					</ChatSection>
+							<ChatBubbleWrapper className="ClientChat">
+								<ChatBubbleSection className="ClientChat">
+									<IdentifierText>You</IdentifierText>
+									<ChatBubble className="ClientChat">
+										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
+										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
+										accusantium rem tenetur?
+									</ChatBubble>
+								</ChatBubbleSection>
+							</ChatBubbleWrapper>
+						</ChatSection>
+					</ChatContainer>
 
 					<MessageSection>
 						<MessageInput maxRows={1} placeholder="Enter your message..." />
@@ -161,10 +171,13 @@ const OnlineStatus = styled("div")({
 	color: "rgba(255, 255, 255, 0.5)",
 });
 
+const ChatContainer = styled("div")({
+	maxHeight: "310px",
+	overflowY: "auto",
+});
+
 const ChatSection = styled("div")({
 	backgroundColor: "#FFFFFF",
-	maxHeight: "290px",
-	overflowY: "auto",
 	display: "flex",
 	flexDirection: "column",
 	justifyContent: "flex-end",
