@@ -7,13 +7,50 @@ import SendIcon from "@mui/icons-material/Send";
 
 const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
+	const [chatHistory, setChatHistory] = useState([]);
+	const [messageValue, setMessageValue] = useState("");
+
+	const getChatResponse = async (value) => {
+		fetch(`http://localhost:8080/api/question=${value}`)
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					throw new Error("Something went wrong ...");
+				}
+			})
+			.then((data) => {
+				const chat = {
+					message: data,
+					sender: "bot",
+				};
+				setChatHistory([...chatHistory, chat]);
+			})
+			.catch((error) => console.log(error));
+	};
+
+	const onMessageInputChange = (e) => {
+		setMessageValue(e.target.value);
+	};
+
+	const checkSendMessage = (e) => {
+		if (e.key === "Enter" && !e.shiftKey) {
+			getChatResponse(e.target.value);
+			const chat = {
+				message: e.target.value,
+				sender: "client",
+			};
+			setChatHistory([...chatHistory, chat]);
+			setMessageValue("");
+		}
+	};
 
 	useEffect(() => {
 		let chat = document.getElementById("chat");
 		if (chat) {
 			chat.scrollTop = chat?.scrollHeight;
 		}
-	}, [showChatWindow]);
+	}, [showChatWindow, chatHistory]);
 
 	return (
 		<>
@@ -47,46 +84,38 @@ const ChatBot = () => {
 					</HeaderSection>
 					<ChatContainer id="chat">
 						<ChatSection>
-							<ChatBubbleWrapper className="ClientChat">
-								<ChatBubbleSection className="ClientChat">
-									<IdentifierText>You</IdentifierText>
-									<ChatBubble className="ClientChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
-
-							<ChatBubbleWrapper className="BotChat">
-								<ChatBubbleSection className="BotChat">
-									<IdentifierText>ChatBot Support</IdentifierText>
-									<ChatBubble className="BotChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
-
-							<ChatBubbleWrapper className="ClientChat">
-								<ChatBubbleSection className="ClientChat">
-									<IdentifierText>You</IdentifierText>
-									<ChatBubble className="ClientChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
+							{chatHistory?.map((chat) => (
+								<ChatBubbleWrapper
+									className={
+										chat.sender === "client" ? "ClientChat" : "BotChat"
+									}>
+									<ChatBubbleSection
+										className={
+											chat.sender === "client" ? "ClientChat" : "BotChat"
+										}>
+										<IdentifierText>
+											{chat.sender === "client" ? "You" : "ChatBot Support"}
+										</IdentifierText>
+										<ChatBubble
+											className={
+												chat.sender === "client" ? "ClientChat" : "BotChat"
+											}>
+											{chat.message}
+										</ChatBubble>
+									</ChatBubbleSection>
+								</ChatBubbleWrapper>
+							))}
 						</ChatSection>
 					</ChatContainer>
 
 					<MessageSection>
-						<MessageInput maxRows={1} placeholder="Enter your message..." />
+						<MessageInput
+							onChange={onMessageInputChange}
+							onKeyUp={checkSendMessage}
+							value={messageValue}
+							maxRows={1}
+							placeholder="Enter your message..."
+						/>
 						<SendButton>
 							<SendIcon sx={{ color: "#FFFFFF", fontSize: "20px" }} />
 						</SendButton>
@@ -172,7 +201,7 @@ const OnlineStatus = styled("div")({
 });
 
 const ChatContainer = styled("div")({
-	maxHeight: "310px",
+	height: "310px",
 	overflowY: "auto",
 });
 
