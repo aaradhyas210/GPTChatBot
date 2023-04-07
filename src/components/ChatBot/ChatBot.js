@@ -4,10 +4,44 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, TextareaAutosize, styled } from "@mui/material";
 import SendTimeExtensionIcon from "@mui/icons-material/SendTimeExtension";
 import SendIcon from "@mui/icons-material/Send";
+import axios from 'axios';
+
+
+
+
+
+
+
+
+
 
 const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
+	const [clientText,setClientText]=useState("")
+	const [botText,setBotText]=useState("")
 
+	function callApi(){
+		const question=clientText
+
+		// Define the endpoint URL and parameters
+		const endpointUrl = 'http://127.0.0.1:8000';
+		const params = {
+		  question: question,
+		};
+		
+		// Make the GET request
+		axios.get(endpointUrl, { params })
+		  .then(response => {
+			// Handle the response data
+			console.log(response.data);
+			setBotText(response.data)
+		  })
+		  .catch(error => {
+			// Handle the error
+			console.error(error);
+		  });
+		
+		}
 	useEffect(() => {
 		let chat = document.getElementById("chat");
 		if (chat) {
@@ -51,10 +85,7 @@ const ChatBot = () => {
 								<ChatBubbleSection className="ClientChat">
 									<IdentifierText>You</IdentifierText>
 									<ChatBubble className="ClientChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
+										{clientText}
 									</ChatBubble>
 								</ChatBubbleSection>
 							</ChatBubbleWrapper>
@@ -63,22 +94,7 @@ const ChatBot = () => {
 								<ChatBubbleSection className="BotChat">
 									<IdentifierText>ChatBot Support</IdentifierText>
 									<ChatBubble className="BotChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
-
-							<ChatBubbleWrapper className="ClientChat">
-								<ChatBubbleSection className="ClientChat">
-									<IdentifierText>You</IdentifierText>
-									<ChatBubble className="ClientChat">
-										Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-										Sapiente vero porro necessitatibus nam rem fuga ea, id, nisi
-										quae incidunt fugit dolorum magni. Quaerat ex, illum totam
-										accusantium rem tenetur?
+										{botText}
 									</ChatBubble>
 								</ChatBubbleSection>
 							</ChatBubbleWrapper>
@@ -86,8 +102,10 @@ const ChatBot = () => {
 					</ChatContainer>
 
 					<MessageSection>
-						<MessageInput maxRows={1} placeholder="Enter your message..." />
-						<SendButton>
+						<MessageInput maxRows={1} placeholder="Enter your message..." onChange={(event) => {
+        setClientText(event.target.value)
+    }}/>
+						<SendButton onClick={callApi}>
 							<SendIcon sx={{ color: "#FFFFFF", fontSize: "20px" }} />
 						</SendButton>
 					</MessageSection>
