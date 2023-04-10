@@ -6,48 +6,69 @@ import SendTimeExtensionIcon from "@mui/icons-material/SendTimeExtension";
 import SendIcon from "@mui/icons-material/Send";
 import axios from 'axios';
 
-
-
-
-
-
-
-
-
-
 const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
-	const [clientText,setClientText]=useState("")
-	const [botText,setBotText]=useState("")
+	const [chatHistory, setChatHistory] = useState([]);
+	const [messageValue, setMessageValue] = useState("");
+	const endpoint = "http://127.0.0.1:8000"
+	const getChatResponse = async (value) => {
+		fetch(endpoint+"?question="+value)
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					throw new Error("Something went wrong ...");
+				}
+			})
+			.then((data) => {
+				const chat = {
+					message: data,
+					sender: "bot",
+				};
+				// setChatHistory([...chatHistory, chat]);
+				setChatHistory((curr) => [...curr, chat]);
 
-	function callApi(){
-		const question=clientText
+			})
+			.catch((error) => console.log(error));
+	};
 
-		// Define the endpoint URL and parameters
-		const endpointUrl = 'http://127.0.0.1:8000';
-		const params = {
-		  question: question,
-		};
-		
-		// Make the GET request
-		axios.get(endpointUrl, { params })
-		  .then(response => {
-			// Handle the response data
-			console.log(response.data);
-			setBotText(response.data)
-		  })
-		  .catch(error => {
-			// Handle the error
-			console.error(error);
-		  });
-		
+	const onMessageInputChange = (e) => {
+		setMessageValue(e.target.value);
+	};
+
+	// const checkSendMessage = (e) => {
+	// 	if (e.key === "Enter" && !e.shiftKey) {
+	// 		setTimeout(
+	// 		getChatResponse(e.target.value),1000)
+	// 		const chat = {
+	// 			message: e.target.value,
+	// 			sender: "client",
+	// 		};
+	// 		setChatHistory([...chatHistory, chat]);
+	// 		setMessageValue("");
+	// 	}
+	// };
+	const checkSendMessage = (e) => {
+		if (e.key === "Enter" && !e.shiftKey) {
+		  const chat = {
+			message: e.target.value,
+			sender: "client",
+		  };
+		  setChatHistory([...chatHistory, chat]);
+		  setMessageValue("");
+		  setTimeout(() => {
+			getChatResponse(e.target.value);
+		  }, 1000);
 		}
+	  };
+	
+		
 	useEffect(() => {
 		let chat = document.getElementById("chat");
 		if (chat) {
 			chat.scrollTop = chat?.scrollHeight;
 		}
-	}, [showChatWindow]);
+	}, [showChatWindow, chatHistory]);
 
 	return (
 		<>
@@ -81,31 +102,39 @@ const ChatBot = () => {
 					</HeaderSection>
 					<ChatContainer id="chat">
 						<ChatSection>
-							<ChatBubbleWrapper className="ClientChat">
-								<ChatBubbleSection className="ClientChat">
-									<IdentifierText>You</IdentifierText>
-									<ChatBubble className="ClientChat">
-										{clientText}
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
-
-							<ChatBubbleWrapper className="BotChat">
-								<ChatBubbleSection className="BotChat">
-									<IdentifierText>ChatBot Support</IdentifierText>
-									<ChatBubble className="BotChat">
-										{botText}
-									</ChatBubble>
-								</ChatBubbleSection>
-							</ChatBubbleWrapper>
+							{chatHistory?.map((chat) => (
+								<ChatBubbleWrapper
+									className={
+										chat.sender === "client" ? "ClientChat" : "BotChat"
+									}>
+									<ChatBubbleSection
+										className={
+											chat.sender === "client" ? "ClientChat" : "BotChat"
+										}>
+										<IdentifierText>
+											{chat.sender === "client" ? "You" : "ChatBot Support"}
+										</IdentifierText>
+										<ChatBubble
+											className={
+												chat.sender === "client" ? "ClientChat" : "BotChat"
+											}>
+											{chat.message}
+										</ChatBubble>
+									</ChatBubbleSection>
+								</ChatBubbleWrapper>
+							))}
 						</ChatSection>
 					</ChatContainer>
 
 					<MessageSection>
-						<MessageInput maxRows={1} placeholder="Enter your message..." onChange={(event) => {
-        setClientText(event.target.value)
-    }}/>
-						<SendButton onClick={callApi}>
+						<MessageInput
+							onChange={onMessageInputChange}
+							onKeyUp={checkSendMessage}
+							value={messageValue}
+							maxRows={1}
+							placeholder="Enter your message..."
+						/>
+						<SendButton>
 							<SendIcon sx={{ color: "#FFFFFF", fontSize: "20px" }} />
 						</SendButton>
 					</MessageSection>
@@ -190,7 +219,7 @@ const OnlineStatus = styled("div")({
 });
 
 const ChatContainer = styled("div")({
-	maxHeight: "310px",
+	height: "310px",
 	overflowY: "auto",
 });
 
