@@ -25,7 +25,7 @@
 	margin-bottom: 25px;
 }
 
-.App div button {
+.AppButton {
 	padding: 5px 20px;
 	font-size: 30px;
 	font-family: "ITC Charter Com";
@@ -35,7 +35,7 @@
 	cursor: pointer;
 }
 
-.App div button:hover {
+.AppButton:hover {
 	opacity: 0.9;
 	background-color: #eb8c00 !important;
 }
