@@ -4,15 +4,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, TextareaAutosize, styled } from "@mui/material";
 import SendTimeExtensionIcon from "@mui/icons-material/SendTimeExtension";
 import SendIcon from "@mui/icons-material/Send";
-import axios from 'axios';
 
 const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
 	const [chatHistory, setChatHistory] = useState([]);
 	const [messageValue, setMessageValue] = useState("");
-	const endpoint = "http://127.0.0.1:8000"
+	const endpoint = "http://127.0.0.1:8000";
+
 	const getChatResponse = async (value) => {
-		fetch(endpoint+"?question="+value)
+		fetch(endpoint + "?question=" + value)
 			.then((res) => {
 				if (res.ok) {
 					return res.json();
@@ -25,285 +25,314 @@ const ChatBot = () => {
 					message: data,
 					sender: "bot",
 				};
-				// setChatHistory([...chatHistory, chat]);
 				setChatHistory((curr) => [...curr, chat]);
-
 			})
 			.catch((error) => console.log(error));
 	};
 
-  const onMessageInputChange = (e) => {
-    setMessageValue(e.target.value);
-  };
-  
-  const checkSendMessage = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      const chat = {
-        message: e.target.value,
-        sender: "client",
-      };
-      setChatHistory([...chatHistory, chat]);
-      setMessageValue("");
-      setTimeout(() => {
-        getChatResponse(e.target.value);
-      }, 1000);
-    }
-  };
+	const onMessageInputChange = (e) => {
+		if (e.key === "Enter" && !e.shiftKey) return;
+		setMessageValue(e.target.value);
+	};
 
-  useEffect(() => {
-    let chat = document.getElementById("chat");
-    if (chat) {
-      chat.scrollTop = chat?.scrollHeight;
-    }
-  }, [showChatWindow, chatHistory]);
+	const checkSendMessage = (e) => {
+		if (e.key === "Enter" && !e.shiftKey) {
+			addNewChat(e.target.value);
+		}
+	};
 
-  return (
-    <>
-      <ChatBotIcon>
-        {showChatWindow ? (
-          <CloseIcon
-            sx={{ color: "#FFFFFF", fontSize: "30px" }}
-            onClick={() => setShowChatWindow(false)}
-          />
-        ) : (
-          <SmartToyIcon
-            sx={{ color: "#FFFFFF", fontSize: "30px" }}
-            onClick={() => setShowChatWindow(true)}
-          />
-        )}
-      </ChatBotIcon>
+	const addNewChat = (value) => {
+		const chat = {
+			message: value,
+			sender: "client",
+		};
+		setChatHistory([...chatHistory, chat]);
+		setMessageValue("");
+		setTimeout(() => {
+			getChatResponse(value);
+		}, 1000);
+	};
 
-      {showChatWindow && (
-        <ChatBotWindow>
-          <HeaderSection>
-            <AvatarSection>
-              <SendTimeExtensionIcon
-                sx={{ color: "#A32020", fontSize: "40px" }}
-              />
-              <OnlineBubble />
-            </AvatarSection>
-            <NameSection>
-              <MainName>ChatBot Support</MainName>
-              <OnlineStatus>Online</OnlineStatus>
-            </NameSection>
-          </HeaderSection>
-          <ChatContainer id="chat">
-            <ChatSection>
-              {chatHistory?.map((chat) => (
-                <ChatBubbleWrapper
-                  className={
-                    chat.sender === "client" ? "ClientChat" : "BotChat"
-                  }
-                >
-                  <ChatBubbleSection
-                    className={
-                      chat.sender === "client" ? "ClientChat" : "BotChat"
-                    }
-                  >
-                    <IdentifierText>
-                      {chat.sender === "client" ? "You" : "ChatBot Support"}
-                    </IdentifierText>
-                    <ChatBubble
-                      className={
-                        chat.sender === "client" ? "ClientChat" : "BotChat"
-                      }
-                    >
-                      {chat.message}
-                    </ChatBubble>
-                  </ChatBubbleSection>
-                </ChatBubbleWrapper>
-              ))}
-            </ChatSection>
-          </ChatContainer>
+	useEffect(() => {
+		let chat = document.getElementById("chat");
+		if (chat) {
+			chat.scrollTop = chat?.scrollHeight;
+		}
+	}, [showChatWindow, chatHistory]);
 
-          <MessageSection>
-            <MessageInput
-              onChange={onMessageInputChange}
-              onKeyUp={checkSendMessage}
-              value={messageValue}
-              maxRows={1}
-              placeholder="Enter your message..."
-            />
-            <SendButton>
-              <SendIcon sx={{ color: "#FFFFFF", fontSize: "20px" }} />
-            </SendButton>
-          </MessageSection>
-        </ChatBotWindow>
-      )}
-    </>
-  );
+	return (
+		<>
+			<ChatBotIcon>
+				{showChatWindow ? (
+					<CloseIcon
+						sx={{ color: "#FFFFFF", fontSize: "30px" }}
+						onClick={() => setShowChatWindow(false)}
+					/>
+				) : (
+					<SmartToyIcon
+						sx={{ color: "#FFFFFF", fontSize: "30px" }}
+						onClick={() => setShowChatWindow(true)}
+					/>
+				)}
+			</ChatBotIcon>
+
+			{showChatWindow && (
+				<ChatBotWindow>
+					<HeaderSection>
+						<AvatarSection>
+							<SendTimeExtensionIcon
+								sx={{ color: "#A32020", fontSize: "40px" }}
+							/>
+						</AvatarSection>
+						<NameSection>
+							<MainName>ChatBot Support</MainName>
+							<OnlineSection>
+								<OnlineBubble />
+								<OnlineStatus>Online</OnlineStatus>
+							</OnlineSection>
+						</NameSection>
+					</HeaderSection>
+					<ChatContainer id="chat">
+						<ChatSection>
+							{chatHistory?.map((chat) => (
+								<ChatBubbleWrapper
+									className={
+										chat.sender === "client" ? "ClientChat" : "BotChat"
+									}>
+									<ChatBubbleSection
+										className={
+											chat.sender === "client" ? "ClientChat" : "BotChat"
+										}>
+										<IdentifierText>
+											{chat.sender === "client" ? "You" : "ChatBot"}
+										</IdentifierText>
+										<ChatBubble
+											className={
+												chat.sender === "client" ? "ClientChat" : "BotChat"
+											}>
+											{chat.message}
+										</ChatBubble>
+									</ChatBubbleSection>
+								</ChatBubbleWrapper>
+							))}
+
+							<ChatBubbleWrapper className={"BotChat"}>
+								<ChatBubbleSection className={"BotChat"}>
+									<IdentifierText>{"ChatBot"}</IdentifierText>
+									<ChatBubble className={"BotChat"}>
+										It is a long established fact that a reader will be
+										distracted by the readable content of a page when looking at
+										its layout. The point of using Lorem Ipsum is that it has a
+										more-or-less normal distribution of letters, as opposed to
+										using 'Content here, content here', making it look like
+										readable English.
+									</ChatBubble>
+								</ChatBubbleSection>
+							</ChatBubbleWrapper>
+						</ChatSection>
+					</ChatContainer>
+
+					<MessageSection>
+						<MessageInput
+							onChange={onMessageInputChange}
+							onKeyUp={checkSendMessage}
+							value={messageValue}
+							maxRows={1}
+							placeholder="Enter your message..."
+						/>
+						<SendButton onClick={() => addNewChat(messageValue)}>
+							<SendIcon sx={{ color: "#EB8C00", fontSize: "30px" }} />
+						</SendButton>
+					</MessageSection>
+				</ChatBotWindow>
+			)}
+		</>
+	);
 };
 
 const ChatBotIcon = styled(IconButton)({
-  position: "fixed",
-  bottom: "35px",
-  right: "35px",
-  zIndex: 1000,
-  backgroundColor: "#A32020",
-  "&:hover": {
-    opacity: 0.8,
-    backgroundColor: "#A32020",
-  },
+	position: "fixed",
+	bottom: "35px",
+	right: "35px",
+	zIndex: 1000,
+	backgroundColor: "#EB8C00",
+	"&:hover": {
+		opacity: 0.8,
+		backgroundColor: "#EB8C00",
+	},
 });
 
 const ChatBotWindow = styled("div")({
-  position: "fixed",
-  bottom: "90px",
-  right: "50px",
-  height: "450px",
-  width: "300px",
-  backgroundColor: "#FFFFFF",
-  borderRadius: "10px",
-  boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
-  zIndex: 2000,
+	position: "fixed",
+	bottom: "90px",
+	right: "50px",
+	height: "450px",
+	width: "300px",
+	backgroundColor: "#FFFFFF",
+	borderRadius: "10px",
+	boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.75)",
+	zIndex: 2000,
+	display: "flex",
+	flexDirection: "column",
 });
 
 const HeaderSection = styled("div")({
-  height: "70px",
-  backgroundColor: "#A32020",
-  borderRadius: "10px 10px 0px 0px",
-  display: "flex",
-  alignItems: "center",
-  padding: "10px 20px",
+	height: "70px",
+	backgroundColor: "#EB8C00",
+	borderRadius: "10px 10px 0px 0px",
+	display: "flex",
+	alignItems: "center",
+	padding: "10px 20px",
 });
 
 const AvatarSection = styled("div")({
-  width: "60px",
-  height: "60px",
-  backgroundColor: "#FFFFFF",
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "relative",
+	width: "60px",
+	height: "60px",
+	borderRadius: "50%",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	position: "relative",
 });
 
 const OnlineBubble = styled("div")({
-  position: "absolute",
-  bottom: "0px",
-  right: "3px",
-  width: "12px",
-  height: "12px",
-  backgroundColor: "#2ECC71",
-  borderRadius: "50%",
+	width: "10px",
+	height: "10px",
+	backgroundColor: "#175D2D",
+	borderRadius: "50%",
+	marginRight: "5px",
 });
 
 const NameSection = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  marginLeft: "30px",
-  color: "#FFFFFF",
-  alignItems: "flex-start",
-  justifyContent: "center",
+	display: "flex",
+	flexDirection: "column",
+	marginLeft: "20px",
+	color: "#FFFFFF",
+	alignItems: "flex-start",
+	justifyContent: "center",
 });
 
 const MainName = styled("div")({
-  fontSize: "20px",
-  fontWeight: 600,
+	fontSize: "20px",
+	fontWeight: 600,
+	color: "#000000",
+});
+
+const OnlineSection = styled("div")({
+	display: "flex",
+	alignItems: "center",
+	marginTop: "5px",
 });
 
 const OnlineStatus = styled("div")({
-  fontSize: "14px",
-  fontWeight: 400,
-  color: "rgba(255, 255, 255, 0.5)",
+	fontSize: "15px",
+	fontWeight: 400,
+	color: "rgba(0, 0, 0, 0.5)",
 });
 
 const ChatContainer = styled("div")({
-  height: "310px",
-  overflowY: "auto",
+	height: "310px",
+	overflowY: "auto",
+	flexGrow: 1,
+	display: "flex",
+	flexDirection: "column",
 });
 
 const ChatSection = styled("div")({
-  backgroundColor: "#FFFFFF",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-end",
-  padding: "10px",
+	backgroundColor: "#EEEEEE",
+	display: "flex",
+	flexDirection: "column",
+	justifyContent: "flex-end",
+	padding: "10px",
+	flexGrow: 1,
 });
 
 const ChatBubbleWrapper = styled("div")({
-  width: "100%",
-  display: "flex",
-  "&.BotChat": {
-    justifyContent: "flex-start",
-  },
-  "&.ClientChat": {
-    justifyContent: "flex-end",
-  },
+	width: "100%",
+	display: "flex",
+	"&.BotChat": {
+		justifyContent: "flex-start",
+	},
+	"&.ClientChat": {
+		justifyContent: "flex-end",
+	},
 });
 
 const ChatBubbleSection = styled("div")({
-  width: "80%",
-  display: "flex",
-  marginBottom: "10px",
-  flexDirection: "column",
-  border: "none",
-  "&.BotChat": {
-    alignItems: "flex-start",
-  },
-  "&.ClientChat": {
-    alignItems: "flex-end",
-  },
+	width: "80%",
+	display: "flex",
+	marginBottom: "10px",
+	flexDirection: "column",
+	border: "none",
+	"&.BotChat": {
+		alignItems: "flex-start",
+	},
+	"&.ClientChat": {
+		alignItems: "flex-end",
+	},
 });
 
 const IdentifierText = styled("div")({
-  fontSize: "12px",
-  fontWeight: 500,
-  color: "rgba(0, 0, 0, 0.4)",
-  marginBottom: "7px",
+	fontSize: "10px",
+	fontWeight: 500,
+	color: "rgba(0, 0, 0, 0.4)",
+	marginBottom: "7px",
 });
 
 const ChatBubble = styled("div")({
-  padding: "15px",
-  fontSize: "13px",
-  zIndex: 1000,
-  textAlign: "left",
-  whiteSpace: "pre-wrap",
-  "&.BotChat": {
-    backgroundColor: "#A32020",
-    color: "#FFFFFF",
-    borderRadius: "5px 20px 20px 20px",
-  },
-  "&.ClientChat": {
-    backgroundColor: "rgb(245, 245, 245,0.9)",
-    color: "#000000",
-    borderRadius: "20px 5px 20px 20px",
-  },
+	padding: "15px",
+	fontSize: "12px",
+	zIndex: 1000,
+	textAlign: "left",
+	whiteSpace: "pre-wrap",
+	"&.BotChat": {
+		backgroundColor: "#EB8C00",
+		color: "rgb(0, 0, 0, 0.7)",
+		borderRadius: "5px 20px 20px 20px",
+	},
+	"&.ClientChat": {
+		backgroundColor: "#FFFFFF",
+		color: "#000000",
+		borderRadius: "20px 5px 20px 20px",
+	},
 });
 
 const MessageSection = styled("div")({
-  height: "50px",
-  backgroundColor: "rgb(245, 245, 245,0.9)",
-  borderRadius: "0px 0px 10px 10px",
-  display: "flex",
-  alignItems: "center",
-  padding: "0px 10px",
-  justifyContent: "space-between",
+	height: "50px",
+	backgroundColor: "#EEEEEE",
+	borderRadius: "0px 0px 10px 10px",
+	display: "flex",
+	alignItems: "center",
+	padding: "0px 10px",
+	justifyContent: "space-between",
 });
 
 const MessageInput = styled(TextareaAutosize)({
-  padding: "8px",
-  width: "80%",
-  fontFamily: "inherit",
-  borderRadius: "20px",
-  resize: "none",
-  "&:focus": {
-    outline: "1px solid #A32020",
-  },
+	padding: "8px",
+	width: "80%",
+	fontFamily: "inherit",
+	backgroundColor: "#FFFFFF",
+	borderRadius: "10px",
+	resize: "none",
+	borderColor: "#EB8C00",
+	borderStyle: "dashed",
+	"&:focus": {
+		outline: "none",
+	},
 });
 
 const SendButton = styled(IconButton)({
-  backgroundColor: "#A32020",
-  height: "35px",
-  width: "35px",
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  "&:hover": {
-    opacity: 0.6,
-    backgroundColor: "#A32020",
-  },
+	backgroundColor: "none",
+	height: "35px",
+	width: "35px",
+	borderRadius: "50%",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	"&:hover": {
+		opacity: 0.8,
+		backgroundColor: "#FFFFFF",
+	},
 });
 
 export default ChatBot;
