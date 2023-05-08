@@ -30,14 +30,14 @@
 	font-size: 30px;
 	font-family: "ITC Charter Com";
 	border-radius: 10px;
-	background-color: #eb8c00;
+	background-color: #FFB600;
 	border: none;
 	cursor: pointer;
 }
 
 .AppButton:hover {
 	opacity: 0.9;
-	background-color: #eb8c00 !important;
+	background-color: #FFB600 !important;
 }
 
 .App-logo {
