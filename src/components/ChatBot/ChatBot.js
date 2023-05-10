@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, TextareaAutosize, styled } from "@mui/material";
-import SendTimeExtensionIcon from "@mui/icons-material/SendTimeExtension";
 import SendIcon from "@mui/icons-material/Send";
 import { COLORS } from "../styleSpecs/Color";
 
