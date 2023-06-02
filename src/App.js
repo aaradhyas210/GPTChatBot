@@ -12,7 +12,7 @@ function App() {
 	const crawlWebsite = async () => {
 		setLoading(true);
 		setCrawlSuccess(false);
-		fetch(`http://localhost:8080/scrape?url=${crawlUrl}`)
+		fetch(`https://webscraperbackend.azurewebsites.net/scrape?url=${crawlUrl}`)
 			.then((res) => {
 				if (res.ok) {
 					return res.json();
