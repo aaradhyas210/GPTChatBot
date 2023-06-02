@@ -8,7 +8,7 @@ const ChatBot = () => {
 	const [showChatWindow, setShowChatWindow] = useState(false);
 	const [chatHistory, setChatHistory] = useState([]);
 	const [messageValue, setMessageValue] = useState("");
-	const endpoint = "http://127.0.0.1:8000";
+	const endpoint = "https://webscraperbackend.azurewebsites.net/ask";
 
 	const getChatResponse = async (value) => {
 		fetch(endpoint + "?question=" + value)
