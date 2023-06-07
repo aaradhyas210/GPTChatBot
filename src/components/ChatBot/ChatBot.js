@@ -21,7 +21,7 @@ const ChatBot = () => {
 			})
 			.then((data) => {
 				const chat = {
-					message: data,
+					message: data.message,
 					sender: "bot",
 				};
 				setChatHistory((curr) => [...curr, chat]);
@@ -62,22 +62,11 @@ const ChatBot = () => {
 
 	return (
 		<>
-			<ChatBotIcon>
+			<ChatBotIcon onClick={() => setShowChatWindow((val) => !val)}>
 				{showChatWindow ? (
-					<CloseIcon
-						sx={{ color: "#FFFFFF", fontSize: "30px" }}
-						onClick={() => setShowChatWindow(false)}
-					/>
+					<CloseIcon sx={{ color: "#FFFFFF", fontSize: "30px" }} />
 				) : (
-					//   <SmartToyIcon
-					//     sx={{ color: "#FFFFFF", fontSize: "30px" }}
-					//     onClick={() => setShowChatWindow(true)}
-					//   />
-					<BotIcon
-						className="small"
-						src="./Bot_Pwc.png"
-						onClick={() => setShowChatWindow(true)}
-					/>
+					<BotIcon className="small" src="./Bot_Pwc.png" />
 				)}
 			</ChatBotIcon>
 
@@ -85,9 +74,6 @@ const ChatBot = () => {
 				<ChatBotWindow>
 					<HeaderSection>
 						<AvatarSection>
-							{/* <SendTimeExtensionIcon
-                sx={{ color: "#A32020", fontSize: "40px" }}
-              /> */}
 							<BotIcon
 								className="large"
 								src="./Bot_Pwc.png"
